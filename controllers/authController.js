@@ -8,6 +8,9 @@ require('dotenv').config();
 const db = new sqlite.Database("./database.db", sqlite.OPEN_READWRITE, err => err && console.log(err));
 
 
+// const q = 'DROP TABLE users'
+
+// db.run(q)
 const authUser = async (req, res) => {
     try{
         res.json(req.user)
@@ -22,10 +25,10 @@ const loginUser = (req, res) => {
         const { email, password } = req.body;
         db.get(`SELECT * FROM users WHERE email='${email}'`, async (err, user) => {
             if(err) throw err;
-            if(!user) return res.status(404).send('Not registered!')
+            if(!user) return res.status(404).json({msg:'Wrong Email!'})
             const verified = await bcryptjs.compare(password, user.password)
             if(!verified){
-                return res.status(409).send('Wrong Password!')
+                return res.status(409).json({msg:'Wrong Password!'})
             }
             const userCredentials = {id:user.id, name:user.name, email:user.email, profile_image:user.profile_image}
             const ACCESS_TOKEN = await createToken(userCredentials);
@@ -45,7 +48,7 @@ const loginUser = (req, res) => {
     }
 }
 
-// db.run('update resumies set user_id = 3 Where id = 3')
+// db.run('delete from users')
 // RESGISTER NEW USER
 const registerUser = async (req, res) => {
     try {
@@ -56,11 +59,10 @@ const registerUser = async (req, res) => {
             if(user){
                 res.status(409).send('Already registered!')
             }else{
-                // const profleImage = 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_640.png'
-                const profleImage = 'http://localhost:3001/images/user.png'
-                const hashPass = await bcryptjs.hash(password, 4)
-                sql = 'INSERT INTO users(name, email, password, profile_image) VALUES(?,?,?,?)'
-                db.run(sql, [name, email, hashPass, profleImage], async err => {
+                const profleImage = 'http://localhost:3001/user.png'
+                const hashPass = await bcryptjs.hash(password, 4);
+                sql = 'INSERT INTO users(name, email, role, profile_image, password) VALUES(?,?,?,?,?)'
+                db.run(sql, [name, email, 0x0, profleImage, hashPass], async err => {
                     if(err) throw err
                     const userCredentials = {id:Date.now(), name, email, profile_image:profleImage}
                     const ACCESS_TOKEN = await createToken(userCredentials);
