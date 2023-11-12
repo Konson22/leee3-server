@@ -9,9 +9,9 @@ const fileUpload = require('express-fileupload');
 
 const app = express();
 
+app.use(cors({origin: 'https://asrbites.onrender.com', credentials: true}));
 app.use(bodyParser.json());
-app.use(cookieParser())
-app.use(cors({origin: ['https://asrbites.onrender.com', 'http://localhost:3000'], credentials: true}));
+app.use(cookieParser());
 // app.use(cors({origin: ['https://asrbites.onrender.com/', 'http://localhost:3000'], methods: ["GET", "POST"], credentials: true }));
 
 app.use(express.static('uploads'));
