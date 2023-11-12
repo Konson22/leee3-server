@@ -23,12 +23,13 @@ const authUser = async (req, res) => {
 const loginUser = (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(email, password)
         db.get(`SELECT * FROM users WHERE email='${email}'`, async (err, user) => {
             if(err) throw err;
-            if(!user) return res.status(404).json({msg:'Wrong Email!'})
+            if(!user) return res.status(404).send('Wrong Email!')
             const verified = await bcryptjs.compare(password, user.password)
             if(!verified){
-                return res.status(409).json({msg:'Wrong Password!'})
+                return res.status(409).send('Wrong Password!')
             }
             const userCredentials = {id:user.id, name:user.name, email:user.email, profile_image:user.profile_image}
             const ACCESS_TOKEN = await createToken(userCredentials);
@@ -38,13 +39,10 @@ const loginUser = (req, res) => {
                 sameSite: "none",
                 secure: 'false',
             });
-            res.json({
-                user:userCredentials,
-                ACCESS_TOKEN
-            })
+            res.json(userCredentials)
         })
     } catch (error) {
-        console.log(error)
+       res.send('Server Side Error...!')
     }
 }
 

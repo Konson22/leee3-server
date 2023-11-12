@@ -31,6 +31,33 @@ const getAllProducts = (req, res) => {
   }
 }
 
+const editProduct = (req, res) => {
+  const { name, category, quantity, price, description } = req.body
+  console.log(req.imageUrl)
+  const sql1 = `UPDATE products SET name='${name}', category='${category}', quantity='${quantity}', price='${price}', description='${description}' WHERE productID = ${parseInt(req.body.id)}` 
+  const sql2 = `UPDATE products SET name='${name}', category='${category}', quantity='${quantity}', price='${price}', description='${description}', product_image='${req.imageUrl}' WHERE productID = ${parseInt(req.body.id)}` 
+  try{
+    db.run(req.imageUrl ? sql2 : sql1, (err) => {
+      if(err) throw err;
+    })
+    res.json('edited...!')
+  }catch(error){
+    console.log(error)
+  }
+}
+
+
+const deleteProducts = (req, res) => {
+  try{
+    db.all(`DELETE FROM products WHERE productID = ${req.body.id}`, (err) => {
+      if(err) throw err;
+      res.json(req.body)
+    })
+  }catch(error){
+    console.log(error)
+  }
+}
+
 
 const addReserveProduct = async function(req, res){
   const code = generateCode()
@@ -94,12 +121,16 @@ const checkoutReserve = (req, res) => {
 }
 
 
+
+
 module.exports = { 
   addProduct, 
+  editProduct,
   getAllProducts, 
   getReserveProducts, 
   addReserveProduct, 
   getSingleReserve, 
-  checkoutReserve 
+  checkoutReserve,
+  deleteProducts
 }
 
