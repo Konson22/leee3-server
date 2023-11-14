@@ -31,9 +31,9 @@ const getAllProducts = (req, res) => {
   }
 }
 
+
 const editProduct = (req, res) => {
   const { name, category, quantity, price, description } = req.body
-  console.log(req.imageUrl)
   const sql1 = `UPDATE products SET name='${name}', category='${category}', quantity='${quantity}', price='${price}', description='${description}' WHERE productID = ${parseInt(req.body.id)}` 
   const sql2 = `UPDATE products SET name='${name}', category='${category}', quantity='${quantity}', price='${price}', description='${description}', product_image='${req.imageUrl}' WHERE productID = ${parseInt(req.body.id)}` 
   try{
@@ -61,12 +61,12 @@ const deleteProducts = (req, res) => {
 
 const addReserveProduct = async function(req, res){
   const code = generateCode()
-
+  const { cartData, collectionTime, collectionMethod } = req.body
+// console.log(cartData, collectionTime, collectionMethod)
   try {
-    req.body.forEach(el => {
-      sql = 'INSERT INTO reservations_db(product_name, qty, price, product_image, code, served) VALUES(?,?,?,?,?,?)';
-      
-      db.run(sql, [el.name, el.qty, el.price, el.product_image, code, false], async err => {
+    cartData.forEach(el => {
+      sql = 'INSERT INTO reservation(product_name, qty, price, product_image, code, served, collectionTime, collectionMethod) VALUES(?,?,?,?,?,?,?,?)';
+      db.run(sql, [el.name, el.qty, el.price, el.product_image, code, false, collectionTime, collectionMethod], async err => {
         if(err) throw err
       });
     });
@@ -82,7 +82,7 @@ function generateCode(){
 
 const getReserveProducts = (req, res) => {
   try{
-    db.all('SELECT * FROM reservations_db', [], (err, rows) => {
+    db.all('SELECT * FROM reservation', [], (err, rows) => {
       if(err) throw err;
       res.json(rows)
     })
@@ -95,7 +95,7 @@ const getReserveProducts = (req, res) => {
 // GET SIGNLE RESERVE
 const getSingleReserve = (req, res) => {
   try{
-    db.all(`SELECT * FROM reservations_db WHERE code = ${req.body.code}`, (err, rows) => {
+    db.all(`SELECT * FROM reservation WHERE code = ${req.body.code}`, (err, rows) => {
       if(err) throw err;
       res.json(rows)
     })
@@ -105,12 +105,12 @@ const getSingleReserve = (req, res) => {
 }
 
 
-// db.run("delete from reservations_db")
-// db.run("ALTER TABLE reservations_db RENAME COLUMN isServed TO served")
+// db.run("delete from reservation")
+// db.run("ALTER TABLE reservation RENAME COLUMN isServed TO served")
 
 const checkoutReserve = (req, res) => {
   try{
-    db.run(`UPDATE reservations_db SET served = 1 WHERE code = ${req.body.code}`, (err) => {
+    db.run(`UPDATE reservation SET served = 1 WHERE code = ${req.body.code}`, (err) => {
       if(err) throw err;
     })
     console.log('Done...........')

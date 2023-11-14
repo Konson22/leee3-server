@@ -4,16 +4,19 @@ const sqlite = require('sqlite3').verbose();
 const db = new sqlite.Database("./database.db", sqlite.OPEN_READWRITE, err => err && console.log(err));
 
 const sql = `
-CREATE TABLE IF NOT EXISTS reservations_db (
+CREATE TABLE IF NOT EXISTS reservation (
     id INTEGER PRIMARY KEY,
     product_name TEXT NOT NULL,
     qty TEXT NOT NULL,
     price TEXT NOT NULL,
     product_image TEXT NOT NULL,
     served INTEGER,
+    collectionTime TEXT NOT NULL,
+    collectionMethod TEXT NOT NULL,
     code INTEGER
 );
 `
+
 // const sql = `
 // CREATE TABLE IF NOT EXISTS users (
 //     userID INTEGER PRIMARY KEY,
@@ -24,6 +27,7 @@ CREATE TABLE IF NOT EXISTS reservations_db (
 //     password TEXT NOT NULL
 // );
 // `
+
 // const sql = `CREATE TABLE IF NOT EXISTS products (
 //     productID INTEGER PRIMARY KEY,
 //     name TEXT NOT NULL,
