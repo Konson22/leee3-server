@@ -6,7 +6,6 @@ const usersRoute = require('./roues/auth');
 const productsRoutes = require('./roues/products');
 const fileUpload = require('express-fileupload');
 
-
 const app = express();
 
 app.use(cors({origin: ['http://localhost:3000', 'https://asrbites.onrender.com'], credentials: true}));
