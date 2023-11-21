@@ -62,7 +62,7 @@ const deleteProducts = (req, res) => {
 const addReserveProduct = async function(req, res){
   const code = generateCode()
   const { cartData, collectionTime, collectionMethod } = req.body
-// console.log(cartData, collectionTime, collectionMethod)
+  const price = cartData.map(i => i.price).reduce((a, t) => +a + +t)
   try {
     cartData.forEach(el => {
       sql = 'INSERT INTO reservation(product_name, qty, price, product_image, code, served, collectionTime, collectionMethod) VALUES(?,?,?,?,?,?,?,?)';
@@ -70,19 +70,32 @@ const addReserveProduct = async function(req, res){
         if(err) throw err
       });
     });
-    res.json({done:true, code});
+    res.json({
+      done:true,
+      cart:{code, items:cartData.length, price, collectionTime, collectionMethod}
+    });
   } catch (error) {
     res.status(500).json({done:false});
   }
 }
 
+const deleteReservation = (req, res) => {
+  try{
+    db.all(`DELETE FROM reservation WHERE code = ${req.body.code}`, (err) => {
+      if(err) throw err;
+      res.json(req.body.code)
+    })
+  }catch(error){
+    console.log(error)
+  }
+}
 function generateCode(){
   return Math.floor(1000 + Math.random() * 9000);
 }
 
 const getReserveProducts = (req, res) => {
   try{
-    db.all('SELECT * FROM reservation', [], (err, rows) => {
+    db.all('SELECT * FROM reservation ORDER BY collectionTime DESC', [], (err, rows) => {
       if(err) throw err;
       res.json(rows)
     })
@@ -105,7 +118,7 @@ const getSingleReserve = (req, res) => {
 }
 
 
-// db.run("delete from reservation")
+// db.run("update reservation set served = 0")
 // db.run("ALTER TABLE reservation RENAME COLUMN isServed TO served")
 
 const checkoutReserve = (req, res) => {
@@ -128,6 +141,7 @@ module.exports = {
   editProduct,
   getAllProducts, 
   getReserveProducts, 
+  deleteReservation,
   addReserveProduct, 
   getSingleReserve, 
   checkoutReserve,
