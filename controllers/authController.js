@@ -19,19 +19,32 @@ const authUser = async (req, res) => {
     }
 }
 
+
+// async function add(){
+//     const hashPass = await bcryptjs.hash('12345', 4);
+//     sql = 'INSERT INTO users_table(name, email, password) VALUES(?,?,?)'
+//     db.run(sql, ['Migi', 'migdadlylast@gmail.com', hashPass], async err => {
+//         if(err) throw err
+//         console.log('created..................................')
+//     })
+// }
+
+// add()
+
+
 // LOGIN USER
 const loginUser = (req, res) => {
     try {
         const { email, password } = req.body;
         console.log(email, password)
-        db.get(`SELECT * FROM users WHERE email='${email}'`, async (err, user) => {
+        db.get(`SELECT * FROM users_table WHERE email='${email}'`, async (err, user) => {
             if(err) throw err;
             if(!user) return res.status(404).send('Wrong Email!')
             const verified = await bcryptjs.compare(password, user.password)
             if(!verified){
                 return res.status(409).send('Wrong Password!')
             }
-            const userCredentials = {id:user.id, name:user.name, email:user.email, profile_image:user.profile_image}
+            const userCredentials = {id:user.id, name:user.name, email:user.email}
             const ACCESS_TOKEN = await createToken(userCredentials);
             res.cookie('ACCESS_TOKEN', ACCESS_TOKEN, {
                 expires: new Date(Date.now() + (3600 * 1000 * 24 * 180 * 1)),
@@ -82,7 +95,7 @@ const registerUser = async (req, res) => {
 
 const getAllUsersController = (req, res) => {
     try{
-        db.all('SELECT * FROM users', [], (err, rows) => {
+        db.all('SELECT * FROM users_table', [], (err, rows) => {
             if(err) throw err;
             res.json(rows)
         })

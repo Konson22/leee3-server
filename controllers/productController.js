@@ -72,7 +72,7 @@ const addReserveProduct = async function(req, res){
     });
     res.json({
       done:true,
-      cart:{code, items:cartData.length, price, collectionTime, collectionMethod}
+      cart:{code, items:cartData.length, price, collectionTime:collectionTime, collectionMethod}
     });
   } catch (error) {
     res.status(500).json({done:false});
