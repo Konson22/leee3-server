@@ -1,22 +1,24 @@
 const express = require('express');
+require('dotenv').config();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const usersRoute = require('./roues/auth');
-const productsRoutes = require('./roues/products');
-const fileUpload = require('express-fileupload');
+const ordersRoute = require('./routes/orders');
+const authRoute = require('./routes/auth');
+const productsRoutes = require('./routes/products');
+// const fileUpload = require('express-fileupload');
 
 const app = express();
 
 app.use(cors({origin: ['http://localhost:3000', 'https://asrbites.onrender.com'], credentials: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
-// app.use(cors({origin: ['https://asrbites.onrender.com/', 'http://localhost:3000'], methods: ["GET", "POST"], credentials: true }));
 
 app.use(express.static('uploads'));
 
 
-app.use('/auth', usersRoute);
+app.use('/auth', authRoute);
+app.use('/orders', ordersRoute);
 app.use('/products', productsRoutes);
 
 const PORT = process.env.PORT || 3001
