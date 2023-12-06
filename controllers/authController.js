@@ -59,7 +59,7 @@ const registerUser = async (req, res) => {
                 sql = 'INSERT INTO users(name, email, password) VALUES(?,?,?)'
                 db.run(sql, [name, email, hashPass], async function(err) {
                     if(err) throw err
-                    const userCredentials = {uid:this.lastID, name, email}
+                    const userCredentials = {userID:this.lastID, name, email}
                     const ACCESS_TOKEN = await createToken(userCredentials);
                     res.cookie('ACCESS_TOKEN', ACCESS_TOKEN, {
                         expires: new Date(Date.now() + (3600 * 1000 * 24 * 180 * 1)),

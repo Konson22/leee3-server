@@ -17,18 +17,18 @@ const getAllOrders = (req, res) => {
 // ADD NEW ORDER TO DATABASE
 const addOrder = async function(req, res){
   const code = generateCode()
-  const { cartData, collectionTime, collectionMethod } = req.body
+  const { cartData, collectionTime, collectionMethod, userName, userID } = req.body
   const price = cartData.map(i => i.price).reduce((a, t) => +a + +t)
   const coordinate = null
 
   try {
     cartData.forEach(el => {
       sql = 'INSERT INTO orders(product_name, quantity, price, product_image, collectionMethod, collectionTime, coordinate, served, code, userID) VALUES(?,?,?,?,?,?,?,?,?,?)';
-      db.run(sql, [el.name, el.qty, el.price, el.product_image, collectionMethod, collectionTime, coordinate, false, code, req.user.userID], async err => {
+      db.run(sql, [el.name, el.qty, el.price, el.product_image, collectionMethod, collectionTime, coordinate, false, code, userID], async err => {
         if(err) throw err
       });
     });
-    res.json({code, items:cartData.length, price, collectionTime, collectionMethod});
+    res.json({userName, code, items:cartData.length, price, collectionTime, collectionMethod});
   } catch (error) {
     res.status(500).json({done:false});
   }
@@ -37,7 +37,7 @@ const addOrder = async function(req, res){
 // GET USER SINGLE ORDER
 const getUserOrders = (req, res) => {
   try{
-    db.all(`SELECT * FROM orders WHERE userID = ${req.user.userID}`, [], (err, rows) => {
+    db.all(`SELECT * FROM orders WHERE userID = ${req.body.userID}`, [], (err, rows) => {
       if(err) throw err;
       res.json(rows)
     })
