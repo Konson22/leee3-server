@@ -10,7 +10,7 @@ const productsRoutes = require('./routes/products');
 
 const app = express();
 
-app.use(cors({origin: ['http://localhost:3000', 'https://leee3.onrender.com/', 'https://asrbites.onrender.com'], credentials: true}));
+app.use(cors({origin: ['http://localhost:3000', 'https://leee3.onrender.com', 'https://asrbites.onrender.com'], credentials: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
