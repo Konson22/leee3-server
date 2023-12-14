@@ -16,7 +16,7 @@ const getAllOrders = (req, res) => {
 
 // ADD NEW ORDER TO DATABASE
 const addOrder = async function(req, res){
-  const code = generateCode()
+  const code = generateRandomCode()
   const { cartData, collectionTime, collectionMethod, userName, userID } = req.body
   const price = cartData.map(i => i.price).reduce((a, t) => +a + +t)
   const coordinate = null
@@ -46,10 +46,22 @@ const getUserOrders = (req, res) => {
   }
 }
 
+// GET USER SINGLE ORDER
+const getOrderDetail = (req, res) => {
+  try{
+    db.all(`SELECT * FROM orders WHERE code = ${req.body.orderCode}`, [], (err, rows) => {
+      if(err) throw err;
+      res.json(rows)
+    })
+  }catch(error){
+    console.log(error)
+  }
+}
+
 // DELETE ORDER
 const deleteOrder = (req, res) => {
   try{
-    db.all(`DELETE FROM orders WHERE code = ${req.body.code}`, (err) => {
+    db.all(`DELETE FROM orders WHERE code = '${req.body.code}'`, (err) => {
       if(err) throw err;
       res.json(req.body.code)
     })
@@ -61,5 +73,17 @@ function generateCode(){
   return Math.floor(1000 + Math.random() * 9000);
 }
 
+function generateRandomCode() {
+  const characters = 'ABC0123456789DEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = '';
 
-module.exports = { getAllOrders, getUserOrders, addOrder, deleteOrder }
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
+  }
+
+  return result;
+}
+
+
+module.exports = { getAllOrders, getUserOrders, getOrderDetail, addOrder, deleteOrder }
